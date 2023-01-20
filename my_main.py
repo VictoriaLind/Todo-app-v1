@@ -50,7 +50,9 @@ class MainWindow(QMainWindow):
         # self.splitter1.show()
 
         self.todoList = self.todoListWidget
-
+        #add task to todolist
+        self.todoList.addItem("test")
+        
         self.inProgressList = self.inProgressListWidget
         self.doneList = self.doneListWidget
         
@@ -59,25 +61,16 @@ class MainWindow(QMainWindow):
         self.add_todo_button.clicked.connect(self.add_item_todo)
 
 
-        self.todoList.setDragEnabled(True)
-        self.todoList.setAcceptDrops(True)
-
-        self.inProgressList.setDragEnabled(True)
-        self.inProgressList.setAcceptDrops(True)
-
-        self.doneList.setDragEnabled(True)
-        self.doneList.setAcceptDrops(True)
-
-        self.todoList.itemSelectionChanged.connect(self.start_drag_todo)
         self.inProgressList.itemSelectionChanged.connect(self.start_drag_inProgress)
         self.doneList.itemSelectionChanged.connect(self.start_drag_done)
 
+        self.todoList.itemSelectionChanged.connect(self.start_drag_todo)
+        self.todoList.dropEvent = self.move_to_inProgress
     def add_item_todo(self):
         text, ok = QInputDialog.getText(self, 'Add Item', 'Enter item:')
         if ok:
             self.todoList.addItem(text)
         
-        # self.todoList.itemPressed.connect(self.move_to_todo)
         self.inProgressList.itemPressed.connect(self.move_to_inProgress)
         self.doneList.itemPressed.connect(self.move_to_done)
 
@@ -89,7 +82,7 @@ class MainWindow(QMainWindow):
             drag = QDrag(self)
             drag.setMimeData(mime_data)
             drag.exec_()
-
+    
     def start_drag_inProgress(self):
         item = self.inProgressList.currentItem()
         if item:
@@ -107,25 +100,6 @@ class MainWindow(QMainWindow):
             drag = QDrag(self)
             drag.setMimeData(mime_data)
             drag.exec_()
-
-    # def move_to_todo(self, event):
-    #     source = event.source()
-    #     text = event.mimeData().text()
-    #     if source == self.inProgressList:
-    #         item = self.inProgressList.currentItem()
-    #         if self.todoList.findItems(text, Qt.MatchExactly):
-    #             pass
-    #         else:
-    #             self.todoList.addItem(text)
-    #             self.inProgressList.takeItem(self.inProgressList.row(item))
-    #     elif source == self.doneList:
-    #         item = self.doneList.currentItem()
-    #         if self.todoList.findItems(text, Qt.MatchExactly):
-    #             pass
-    #         else:
-    #             self.todoList.addItem(text)
-    #             self.doneList.takeItem(self.doneList.row(item))
-    #     event.accept()
 
     def move_to_inProgress(self, event):
         source = event.source()
